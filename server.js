@@ -27,6 +27,11 @@ bot.on("messageDelete", msg => {
 let globals = {
   services: {
     botEventService: botEventService
+  },interfaces:{
+    
+  },
+  registerInterface: function(name,service){
+    globals.interfaces[name] = service;
   },
   registerService: function(name,service){
     globals.services[name] = service;
@@ -89,6 +94,7 @@ bot.on("messageCreate", async msg => {
       }
       modules[i].handle({...extras, ...globals});
     }
+    bot.createMessage(msg.channel.id, messageQueue.join("\n"));
   }
   
 });

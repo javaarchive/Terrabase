@@ -6,6 +6,8 @@ dependencies:
   eris: 0.13.1
   erlpack: 0.1.3
   express: 4.17.1
+  jsoning: 0.6.14
+  lodash: 4.17.15
   sql: 0.78.0
   sqlite3: 4.2.0
   zlib-sync: 0.1.6
@@ -385,6 +387,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-m7o6xuOaT1aqheYHKf8W6J5pYH85ZI9w077erOzLje3JsB1gkafkAhHHY19dqjulgIZHFm32Cp5uNZgcQqdJKw==
+  /imurmurhash/0.1.4:
+    dev: false
+    engines:
+      node: '>=0.8.19'
+    resolution:
+      integrity: sha1-khi5srkoojixPcT7a21XbyMUU+o=
   /inflight/1.0.6:
     dependencies:
       once: 1.4.0
@@ -424,10 +432,22 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-o7MKXE8ZkYMWeqq5O+764937ZU8=
+  /is-typedarray/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-5HnICFjfDBsR3dppQPlgEfzaSpo=
   /isarray/1.0.0:
     dev: false
     resolution:
       integrity: sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
+  /jsoning/0.6.14:
+    dependencies:
+      write-file-atomic: 3.0.3
+    dev: false
+    engines:
+      node: '>=0.12'
+    resolution:
+      integrity: sha512-aPKmhEM7Nd2o5RB6odT3tjLXFjOOmEr0q4aCHz+KhLArOUN/z9mVTpReRc0YJpj67cLkgV5N5Rrubr5M/n4Ktw==
   /lodash/4.1.0:
     dev: false
     resolution:
@@ -893,6 +913,12 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==
+  /typedarray-to-buffer/3.1.5:
+    dependencies:
+      is-typedarray: 1.0.0
+    dev: false
+    resolution:
+      integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
   /unpipe/1.0.0:
     dev: false
     engines:
@@ -925,6 +951,15 @@ packages:
     dev: false
     resolution:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+  /write-file-atomic/3.0.3:
+    dependencies:
+      imurmurhash: 0.1.4
+      is-typedarray: 1.0.0
+      signal-exit: 3.0.3
+      typedarray-to-buffer: 3.1.5
+    dev: false
+    resolution:
+      integrity: sha512-AvHcyZ5JnSfq3ioSyjrBkH9yW4m7Ayk8/9My/DD9onKeu/94fwrMocemO2QAJFAlnnDN+ZDS+ZjAR5ua1/PV/Q==
   /ws/7.3.0:
     dev: false
     engines:
@@ -956,6 +991,8 @@ specifiers:
   eris: 0.13.1
   erlpack: ^0.1.3
   express: ^4.17.1
+  jsoning: ^0.6.14
+  lodash: ^4.17.15
   sql: ^0.78.0
   sqlite3: ^4.2.0
   zlib-sync: ^0.1.6
