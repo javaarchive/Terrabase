@@ -6,6 +6,7 @@ var bot = new Eris(process.env.token);
 let modules = [];
 // Modules that provide services to other modules need to be regsitered first
 modules.push(require("./examplemodule"));
+modules.push(require("./core"));
 const EventEmitter = require("events");
 class BotEventService extends EventEmitter {}
 const botEventService = new BotEventService();
@@ -24,27 +25,27 @@ bot.on("guildMemberRemove", (guild, member) => {
 bot.on("messageDelete", msg => {
   botEventService.emit("messagedelete", msg);
 });
+
 let globals = {
   services: {
     botEventService: botEventService
-  },interfaces:{
-    
   },
-  registerInterface: function(name,service){
+  interfaces: {},
+  registerInterface: function(name, service) {
     globals.interfaces[name] = service;
   },
-  registerService: function(name,service){
+  registerService: function(name, service) {
     globals.services[name] = service;
   }
-}
+};
 bot.on("ready", () => {
   console.log("System Up");
   botEventService.emit("started");
-  for(let i = 0; i < modules.length; i ++){
-    try{
+  for (let i = 0; i < modules.length; i++) {
+    try {
       modules[i].start(globals);
-    }catch(ex){
-      console.warn("Internal Error whie loading the "+i+" th module "+ex)
+    } catch (ex) {
+      console.warn("Internal Error whie loading the " + i + "th module " + ex);
       modules.splice(i, 1);
     }
   }
@@ -58,7 +59,7 @@ bot.on("messageCreate", async msg => {
       msg.channel.id,
       "Message sending took " + (Date.now() - curTime) + "ms"
     );
-  }else if (msg.content === "!host") {
+  } else if (msg.content === "!host") {
     let curTime = Date.now();
     bot.createMessage(
       msg.channel.id,
@@ -82,21 +83,23 @@ bot.on("messageCreate", async msg => {
         os.loadavg() +
         "```"
     );
-  }else{
+  } else {
     // Send to processers
     let messageQueue = [];
-    for(let i = 0; i < modules.length; i ++){
-      let extras = {
+    let extras = {
         messageQueue: messageQueue,
-        appendMessage: function(message){
+        appendMessage: function(message) {
           messageQueue.push(message);
-        }
-      }
-      modules[i].handle({...extras, ...globals});
+        },
+      message: msg,
+      client: bot
+      };
+    let finalenv = { ...extras, ...globals };
+    for (let i = 0; i < modules.length; i++) {
+      modules[i].handle(finalenv);
     }
-    bot.createMessage(msg.channel.id, messageQueue.join("\n"));
+    bot.createMessage(msg.channel.id, finalenv.messageQueue.join("\n"));
   }
-  
 });
 bot.connect();
 //create a new server object:

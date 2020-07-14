@@ -16,5 +16,6 @@ module.exports = {
       return Promise.all(funcs);
     }
     db.includes = db.has; 
+    return db;
   }
 }

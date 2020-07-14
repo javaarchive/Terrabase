@@ -8,7 +8,7 @@ let self = {
   commands: [],
   perms: new Set(),
   start: function(enviroment) {
-    enviroment.services.registerService("fetchConfig", function(
+    enviroment.registerService("fetchConfig", function(
       moduleid,
       defaultConfig = {}
     ) {
@@ -19,18 +19,27 @@ let self = {
       }
       return _.defaults(defaultConfig, config.get(moduleid));
     });
-    enviroment.services.registerService("saveConfig", function(
+    enviroment.registerService("saveConfig", function(
       moduleid,
       newConfig
     ) {
       config.set(moduleid, newConfig);
     });
-    enviroment.services.registerService("registerPermisson", async function(
+    enviroment.registerService("registerPermisson", async function(
       name
     ) {
       self.perms.add(name);
     });
-    enviroment.services.registerService("checkAllowed", async function(data) {
+    enviroment.registerService("fetchPermisson", async function(
+      message, perms
+    ) {
+      if(self.perms.has(perms)){
+        
+      }else{
+        
+      }
+    });
+    enviroment.registerService("checkAllowed", async function(data) {
       let message = data.message;
       let id = data.id;
     });
@@ -40,13 +49,39 @@ let self = {
       channelsDatabase: "sqlite://channels.db"
     });
     enviroment.services.registerPermisson("core.admin");
-    self.serversDB = new Endb(self.config);
+    self.guildsDB = new Endb(self.config);
     self.categoriessDB = new Endb(self.config);
     self.channelsDB = new Endb(self.config);
     enviroment.services.saveConfig(self.id, self.config);
+    function getType(type){
+      if(type == "guild"){
+        return self.guildsDB;
+      }
+      if(type == "category"){
+        return self.categoriesDB;
+      }
+      if(type == "channel"){
+        return self.channelsDB;
+      }
+      return undefined;
+    }
+    enviroment.registerService("fetchDatabase", function(levelSnowflake ,level, id, defaults = {}){
+      let dbObj = {
+        get: async function(){
+          return _.defaults(defaults,await getType("category").get(levelSnowflake)[id]);
+        },set:async function(newVal){
+          await getType("category").set(levelSnowflake[id], newVal);
+        }
+      };
+      return dbObj;
+    });
   },
   handle: function(data) {
     let message = data.message;
+    if(message.content.includes("!terracore!")){
+      console.log("OK!");
+      data.appendMessage("Core loaded");
+    }
   }
 };
 module.exports = self;
