@@ -42,12 +42,16 @@ let self = {
     self.config = enviroment.services.fetchConfig(self.id, {
       serversDatabase: "sqlite://servers.db",
       categoriesDatabase: "sqlite://categories.db",
-      channelsDatabase: "sqlite://channels.db"
+      channelsDatabase: "sqlite://channels.db",
+      rolesDatabase: "sqlite://roles.db",
+      usersDatabase: "sqlite://users.db"
     });
     enviroment.services.registerPermisson("core.admin");
-    self.guildsDB = new Endb(self.config);
-    self.categoriessDB = new Endb(self.config);
-    self.channelsDB = new Endb(self.config);
+    self.guildsDB = new Endb(self.config.serversDatabase);
+    self.categoriesDB = new Endb(self.config.categoriesDatabase);
+    self.channelsDB = new Endb(self.config.channelsDatabase);
+    self.rolesDB = new Endb(self.config.rolesDatabase);
+    self.usersDB = new Endb(self.config.usersDatabase);
     enviroment.services.saveConfig(self.id, self.config);
     function getType(type) {
       if (type == "guild") {
@@ -59,6 +63,12 @@ let self = {
       if (type == "channel") {
         return self.channelsDB;
       }
+      if (type == "roles") {
+        return self.rolesDB;
+      }
+      if (type == "users") {
+        return self.usersDB;
+      }
       return undefined;
     }
     enviroment.registerService("fetchDatabase", function(
@@ -69,12 +79,18 @@ let self = {
     ) {
       let dbObj = {
         get: async function() {
+          let template = {};
+          template[id] = defaults;
+          await getType("category").ensure(levelSnowflake, template);
           return _.defaults(
             defaults,
             await getType("category").get(levelSnowflake)[id]
           );
         },
         set: async function(newVal) {
+          let template = {};
+          template[id] = defaults;
+          await getType("category").ensure(levelSnowflake, template);
           let temp = await getType("category").get(levelSnowflake);
           temp[id] = newVal;
           await getType("category").set(levelSnowflake, temp);
@@ -86,7 +102,7 @@ let self = {
       levels,
       id,
       defaults = {},
-      order = ["guild", "category", "channel"]
+      order = ["guild", "category", "channel","roles","users"]
     ) {
       let data = {};
 
