@@ -85,6 +85,7 @@ bot.on("messageCreate", async msg => {
     );
   } else {
     // Send to processers
+    //console.log(require("./utils").compileRoletoPosition(msg.channel.guild.roles));
     let messageQueue = [];
     let extras = {
         messageQueue: messageQueue,
@@ -96,11 +97,17 @@ bot.on("messageCreate", async msg => {
       };
     let finalenv = { ...extras, ...globals };
     for (let i = 0; i < modules.length; i++) {
-      modules[i].handle(finalenv);
+      await modules[i].handle(finalenv);
     }
-    bot.createMessage(msg.channel.id, finalenv.messageQueue.join("\n"));
+    console.log("Finished executing modules");
+    if(finalenv.messageQueue.length > 0){
+      bot.createMessage(msg.channel.id, finalenv.messageQueue.join("\n"));
+    }
   }
 });
+bot.on("ready", function(){
+  console.log("Connected");
+})
 bot.connect();
 //create a new server object:
 http
@@ -109,3 +116,4 @@ http
     res.end(); //end the response
   })
   .listen(8080); //the server object listens on port 8080
+console.log("All systems have loaded");
