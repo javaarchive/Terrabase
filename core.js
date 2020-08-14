@@ -10,6 +10,11 @@ function toBoolean(obj) {
   }
   return true;
 }
+const textToMode = {
+  "none":undefined,
+  "false": false,
+  "true": true
+}
 let self = {
   name: "Core",
   id: "core",
@@ -122,7 +127,7 @@ let self = {
       levels,
       id,
       defaults = {},
-      order = ["guild", "category", "channel", "rolesCache", "users"]
+      order = ["rolesCache", "guild", "category", "channel", "users"]
     ) {
       let data = {};
 
@@ -143,12 +148,12 @@ let self = {
       //console.log(typeof data.message);
       let rtp = utils.compileRoletoPosition(data.message.channel.guild);
       let fetchLevels = [
-        data.message.channel.guild.id,
-        data.message.channel.parentID || 1,
-        data.message.channel.id,
         data.message.member.roles.length > 0
           ? utils.fetchMaxRole(data.message.member.roles, rtp)
           : 1,
+        data.message.channel.guild.id,
+        data.message.channel.parentID || 1,
+        data.message.channel.id,
         data.message.author.id + "-" + data.message.guildID
       ];
       let result =
@@ -172,29 +177,67 @@ let self = {
     }
     if (message.content.startsWith("permsconfig")) {
       if (message.member.permission.has("administrator")) {
-        data.appendMessage("You are an admin");
-        data.appendEmbed({
-          title: "Permisson Configurator",
-          description:
-            "It's a complex system but it's easy to learn how it works",
-          url: "https://discordapp.com",
-          color: 11111111,
-          thumbnail: {
-            url: "https://cdn.discordapp.com/embed/avatars/0.png"
-          },
-          author: {
-            name: "Terrabase Permissons Guide",
-            url: "https://github.com/javaarchive/Terrabase",
-            icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
-          },
-          fields: [
-            {
-              name: "You already know how to use it",
-              value:
-                "It's just like discord's permissons system except the priorties are a bit different. First guild level permissons are applied then the category permissons override those if you use categories. Then the channel level permissons are applied and finally the role level and user level permissons are applied. This order will defintley change in the future because I think roles should be somewhere else. "
+        data.appendMessage("You have sufficent permissons: welcome!");
+        if (message.content.length == "permsconfig".length) {
+          data.appendEmbed({
+            title: "Permisson Configurator",
+            description:
+              "It's a complex system but it's easy to learn how it works",
+            url: "https://discordapp.com",
+            color: 11111111,
+            thumbnail: {
+              url: "https://cdn.discordapp.com/embed/avatars/0.png"
+            },
+            author: {
+              name: "Terrabase Permissons Guide",
+              url: "https://github.com/javaarchive/Terrabase",
+              icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+            },
+            fields: [
+              {
+                name: "You already know how to use it",
+                value:
+                  "It's just like discord's permissons system except the priorties are a bit different. First guild level permissons are applied then the category permissons override those if you use categories. Then the channel level permissons are applied and finally the role level and user level permissons are applied. This order will defintley change in the future because I think roles should be somewhere else. "
+              }
+            ]
+          });
+        } else {
+          let args = message.content
+            .substring("permsconfig".length + 1)
+            .split(" ");
+          try {
+            if (args.length < 4) {
+              throw "Not enough arguments";
             }
-          ]
-        });
+            if (!(["false", "true","none"].includes(args[3]))) {
+              throw "Argument 4 is not valid must be one of false or true or none";
+            }
+            if(isNaN(args[1])){
+              throw "Argument 2 is not a number/snowflake";
+            }
+            if (!(["category","channel", "role","guild"].includes(args[0]))) {
+              throw "Argument 1 is not valid must be one of false or true or none";
+            }
+            if(args[0] == "role"){
+              data.appendMessage("Note: you must run the role compilation tool to save role permissons to a ready to use format. ");
+            }
+          } catch (ex) {
+            const errorEmbed = {
+              title: "Internal Error",
+              description:
+                "This could have happended becuase something you typed was invalid or it could have been a problem with our code. ",
+              color: 15158332,
+              fields: [
+                {
+                  name: "Info: ",
+                  value: "Error: " + ex
+                }
+              ]
+            };
+
+            data.appendEmbed(errorEmbed);
+          }
+        }
       } else {
         data.appendMessage(
           "Not an admin you have perms number " +
