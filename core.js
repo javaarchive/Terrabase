@@ -3,9 +3,9 @@ var _ = require("lodash");
 let jsoning = require("jsoning");
 let config = new jsoning("config.json");
 const utils = require("./utils");
-const {patch} = require("./endbpp");
-function toBoolean(obj){
-  if(obj == undefined || obj == null || obj == false){
+const { patch } = require("./endbpp");
+function toBoolean(obj) {
+  if (obj == undefined || obj == null || obj == false) {
     return false;
   }
   return true;
@@ -101,10 +101,10 @@ let self = {
         get: async function() {
           let template = {};
           template[id] = defaults;
-          await (getType("category")).ensure(levelSnowflake, template);
+          await getType("category").ensure(levelSnowflake, template);
           return _.defaults(
             defaults,
-            await (getType("category")).get(levelSnowflake)[id]
+            await getType("category").get(levelSnowflake)[id]
           );
         },
         set: async function(newVal) {
@@ -127,7 +127,9 @@ let self = {
       let data = {};
 
       for (let i = 0; i < levels.length; i++) {
-        if(levels[i] == 1){continue;}
+        if (levels[i] == 1) {
+          continue;
+        }
         data = _.defaults(
           data,
           await enviroment.services
@@ -150,7 +152,10 @@ let self = {
         data.message.author.id + "-" + data.message.guildID
       ];
       let result =
-        false || toBoolean((await enviroment.services.fetchComplete(fetchLevels, self.id))[perm]);
+        false ||
+        toBoolean(
+          (await enviroment.services.fetchComplete(fetchLevels, self.id))[perm]
+        );
       return result;
     });
   },
@@ -165,11 +170,36 @@ let self = {
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
     }
-    if(message.content.startsWith("permsconfig")){
-      if(message.member.permission.has("administrator")){
+    if (message.content.startsWith("permsconfig")) {
+      if (message.member.permission.has("administrator")) {
         data.appendMessage("You are an admin");
-      }else{
-        data.appendMessage("Not an admin you have perms number "+message.member.permission.allow);
+        data.appendEmbed({
+          title: "Permisson Configurator",
+          description:
+            "It's a complex system but it's easy to learn how it works",
+          url: "https://discordapp.com",
+          color: 11111111,
+          thumbnail: {
+            url: "https://cdn.discordapp.com/embed/avatars/0.png"
+          },
+          author: {
+            name: "Terrabase Permissons Guide",
+            url: "https://github.com/javaarchive/Terrabase",
+            icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+          },
+          fields: [
+            {
+              name: "You already know how to use it",
+              value:
+                "It's just like discord's permissons system except the priorties are a bit different. First guild level permissons are applied then the category permissons override those if you use categories. Then the channel level permissons are applied and finally the role level and user level permissons are applied. This order will defintley change in the future because I think roles should be somewhere else. "
+            }
+          ]
+        });
+      } else {
+        data.appendMessage(
+          "Not an admin you have perms number " +
+            message.member.permission.allow
+        );
       }
     }
   }

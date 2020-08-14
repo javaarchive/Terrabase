@@ -87,10 +87,15 @@ bot.on("messageCreate", async msg => {
     // Send to processers
     //console.log(require("./utils").compileRoletoPosition(msg.channel.guild.roles));
     let messageQueue = [];
+    let embedQueue = [];
     let extras = {
         messageQueue: messageQueue,
+      embedQueue: embedQueue,
         appendMessage: function(message) {
           messageQueue.push(message);
+        },
+      appendEmbed: function(embed) {
+          embedQueue.push(embed);
         },
       message: msg,
       client: bot
@@ -101,7 +106,7 @@ bot.on("messageCreate", async msg => {
     }
     console.log("Finished executing modules");
     if(finalenv.messageQueue.length > 0){
-      bot.createMessage(msg.channel.id, finalenv.messageQueue.join("\n"));
+      bot.createMessage(msg.channel.id, {content: finalenv.messageQueue.join("\n"), embed: embedQueue[0]});
     }
   }
 });
