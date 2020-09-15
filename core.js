@@ -1,3 +1,5 @@
+// Terragon Core: Required for permissons, config, and other stuff to function
+
 const Endb = require("endb");
 var _ = require("lodash");
 let jsoning = require("jsoning");
