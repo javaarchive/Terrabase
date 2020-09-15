@@ -11,10 +11,10 @@ function toBoolean(obj) {
   return true;
 }
 const textToMode = {
-  "none":undefined,
-  "false": false,
-  "true": true
-}
+  none: undefined,
+  false: false,
+  true: true
+};
 let self = {
   name: "Core",
   id: "core",
@@ -93,7 +93,7 @@ let self = {
       id,
       defaults = {}
     ) {
-      if(typeof levelSnowflake == "number"){
+      if (typeof levelSnowflake == "number") {
         levelSnowflake = levelSnowflake.toString();
       }
       let dbObj = {
@@ -101,9 +101,17 @@ let self = {
           let template = {};
           template[id] = defaults;
           await getType(level).ensure(levelSnowflake, template);
-          console.log(level+" "+levelSnowflake+" "+JSON.stringify(await getType(level).get(levelSnowflake))+' requested '+id);
-          let data = (await getType(level).get(levelSnowflake));
-          if(!data[id]){
+          console.log(
+            level +
+              " " +
+              levelSnowflake +
+              " " +
+              JSON.stringify(await getType(level).get(levelSnowflake)) +
+              " requested " +
+              id
+          );
+          let data = await getType(level).get(levelSnowflake);
+          if (!data[id]) {
             data[id] = template;
           }
           return data[id];
@@ -126,24 +134,30 @@ let self = {
       order = ["rolesCache", "guild", "category", "channel", "users"]
     ) {
       let data = {};
-      console.log("Using id "+id);
+      console.log("Using id " + id);
       for (let i = 0; i < levels.length; i++) {
         if (levels[i] == 1) {
           continue;
         }
-        console.log("stage "+order[i]+" id: "+levels[i]+" : "+ JSON.stringify(await enviroment.services
-            .fetchDatabase(levels[i], order[i], id, defaults)
-            .get()));
-        let overrides = await enviroment.services
-            .fetchDatabase(levels[i], order[i], id, defaults)
-            .get();
-        if(!overrides){
-          overrides = {}
-        }
-        data = _.defaults(
-          data,
-          overrides
+        console.log(
+          "stage " +
+            order[i] +
+            " id: " +
+            levels[i] +
+            " : " +
+            JSON.stringify(
+              await enviroment.services
+                .fetchDatabase(levels[i], order[i], id, defaults)
+                .get()
+            )
         );
+        let overrides = await enviroment.services
+          .fetchDatabase(levels[i], order[i], id, defaults)
+          .get();
+        if (!overrides) {
+          overrides = {};
+        }
+        data = _.defaults(data, overrides);
       }
       return data;
     });
@@ -159,15 +173,24 @@ let self = {
         data.message.channel.id,
         data.message.author.id + "-" + data.message.guildID
       ];
-      let result = false
-      console.log("Fetch Complete Data: "+JSON.stringify(await enviroment.services.fetchComplete(fetchLevels, "perms")));
+      let result = false;
+      console.log(
+        "Fetch Complete Data: " +
+          JSON.stringify(
+            await enviroment.services.fetchComplete(fetchLevels, "perms")
+          )
+      );
       if (self.perms.has(perm)) {
-      result =
-        false ||
-          toBoolean((await enviroment.services.fetchComplete(fetchLevels, "perms"))[perm]);
+        result =
+          false ||
+          toBoolean(
+            (await enviroment.services.fetchComplete(fetchLevels, "perms"))[
+              perm
+            ]
+          );
         //toBoolean();
-      }else{
-      result = false;  
+      } else {
+        result = false;
       }
       return result;
     });
@@ -178,7 +201,10 @@ let self = {
       console.log("OK!");
       data.appendMessage("Core loaded");
     }
-    if (message.content.includes("!terrapermcheck!") || message.content.includes("!tpc!")) {
+    if (
+      message.content.includes("!terrapermcheck!") ||
+      message.content.includes("!tpc!")
+    ) {
       data.appendMessage(
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
@@ -217,26 +243,35 @@ let self = {
             if (args.length < 4) {
               throw "Not enough arguments";
             }
-            if (!(["false", "true","none"].includes(args[3]))) {
+            if (!["false", "true", "none"].includes(args[3])) {
               throw "Argument 4 is not valid must be one of false or true or none";
             }
-            if(isNaN(args[1])){
+            if (isNaN(args[1])) {
               throw "Argument 2 is not a number/snowflake";
             }
-            if (!(["category","channel", "role","guild"].includes(args[0]))) {
+            if (!["category", "channel", "role", "guild"].includes(args[0])) {
               throw "Argument 1 is not valid must be one of false or true or none";
             }
-            if(args[0] == "role"){
-              data.appendMessage("Note: you must run the role compilation tool to save role permissons to a ready to use format. ");
+            if (args[0] == "role") {
+              data.appendMessage(
+                "Note: you must run the role compilation tool to save role permissons to a ready to use format. "
+              );
             }
             //getType(args[0]).set(args[1], args[3]);
-            if(self.perms.has(args[2])){
-              let permsMap = data.services.fetchDatabase(args[1], args[0], "perms", {});
+            if (self.perms.has(args[2])) {
+              let permsMap = data.services.fetchDatabase(
+                args[1],
+                args[0],
+                "perms",
+                {}
+              );
               let temp = await permsMap.get();
               temp[args[2]] = textToMode[args[3]];
-              console.log("Setting new value of temp to "+JSON.stringify(temp));
+              console.log(
+                "Setting new value of temp to " + JSON.stringify(temp)
+              );
               await permsMap.set(temp);
-            }else{
+            } else {
               throw "Permisson not registered";
             }
           } catch (ex) {
