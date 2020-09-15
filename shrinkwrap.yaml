@@ -6,6 +6,7 @@ dependencies:
   eris: 0.13.1
   erlpack: 0.1.3
   express: 4.17.1
+  i18n: 0.13.2
   jsoning: 0.6.14
   lodash: 4.17.15
   sql: 0.78.0
@@ -165,6 +166,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==
+  /debug/4.1.1:
+    dependencies:
+      ms: 2.1.2
+    dev: false
+    resolution:
+      integrity: sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
   /deep-extend/0.6.0:
     dev: false
     engines:
@@ -373,6 +380,19 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha512-ZTTX0MWrsQ2ZAhA1cejAwDLycFsd7I7nVtnkT3Ol0aqodaKW+0CTZDQ1uBv5whptCnc8e8HeRRJxRs0kmm/Qfw==
+  /i18n/0.13.2:
+    dependencies:
+      debug: 4.1.1
+      make-plural: 6.2.2
+      math-interval-parser: 2.0.1
+      messageformat: 2.3.0
+      mustache: 4.0.1
+      sprintf-js: 1.1.2
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-PB65bHhQESMBIl/xVNChEAzoxZ5W6FrZ1H9Ma/YcPeSfE7VS9b0sqwBPusa0CfzSKUPSl+uMhRIgyv3jkE7XNw==
   /iconv-lite/0.4.24:
     dependencies:
       safer-buffer: 2.1.2
@@ -456,6 +476,23 @@ packages:
     dev: false
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+  /make-plural/4.3.0:
+    dev: false
+    hasBin: true
+    optionalDependencies:
+      minimist: 1.2.5
+    resolution:
+      integrity: sha512-xTYd4JVHpSCW+aqDof6w/MebaMVNTVYBZhbB/vi513xXdiPT92JMVCo0Jq8W2UZnzYRFeVbQiQ+I25l13JuKvA==
+  /make-plural/6.2.2:
+    dev: false
+    resolution:
+      integrity: sha512-8iTuFioatnTTmb/YJjywkVIHLjcwkFD9Ms0JpxjEm9Mo8eQYkh1z+55dwv4yc1jQ8ftVBxWQbihvZL1DfzGGWA==
+  /math-interval-parser/2.0.1:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-VmlAmb0UJwlvMyx8iPhXUDnVW1F9IrGEd9CIOmv+XL8AErCUUuozoDMrgImvnYt2A+53qVX/tPW6YJurMKYsvA==
   /media-typer/0.3.0:
     dev: false
     engines:
@@ -466,6 +503,22 @@ packages:
     dev: false
     resolution:
       integrity: sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
+  /messageformat-formatters/2.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-E/lQRXhtHwGuiQjI7qxkLp8AHbMD5r2217XNe/SREbBlSawe0lOqsFb7rflZJmlQFSULNLIqlcjjsCPlB3m3Mg==
+  /messageformat-parser/4.1.3:
+    dev: false
+    resolution:
+      integrity: sha512-2fU3XDCanRqeOCkn7R5zW5VQHWf+T3hH65SzuqRvjatBK7r4uyFa5mEX+k6F9Bd04LVM5G4/BHBTUJsOdW7uyg==
+  /messageformat/2.3.0:
+    dependencies:
+      make-plural: 4.3.0
+      messageformat-formatters: 2.0.1
+      messageformat-parser: 4.1.3
+    dev: false
+    resolution:
+      integrity: sha512-uTzvsv0lTeQxYI2y1NPa1lItL5VRI8Gb93Y2K2ue5gBPyrbJxfDi/EYWxh2PKv5yO42AJeeqblS9MJSh/IEk4w==
   /methods/1.1.2:
     dev: false
     engines:
@@ -535,6 +588,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
+  /mustache/4.0.1:
+    dev: false
+    engines:
+      npm: '>=1.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-yL5VE97+OXn4+Er3THSmTdCFCtx5hHWzrolvH+JObZnUYwuaG7XV+Ch4fR2cIrcYI0tFHxS7iyFYl14bW8y2sA==
   /nan/2.14.1:
     dev: false
     resolution:
@@ -811,6 +871,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-XtwETKTrb3gW1Qui/GPiXY/kcH8=
+  /sprintf-js/1.1.2:
+    dev: false
+    resolution:
+      integrity: sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==
   /sql/0.78.0:
     dependencies:
       lodash: 4.1.0
@@ -991,6 +1055,7 @@ specifiers:
   eris: 0.13.1
   erlpack: ^0.1.3
   express: ^4.17.1
+  i18n: ^0.13.2
   jsoning: ^0.6.14
   lodash: ^4.17.15
   sql: ^0.78.0
