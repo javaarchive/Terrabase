@@ -40,15 +40,6 @@ let self = {
     enviroment.registerService("registerPermisson", async function(name) {
       self.perms.add(name);
     });
-    enviroment.registerService("fetchPermisson", async function(
-      message,
-      perms
-    ) {
-      if (self.perms.has(perms)) {
-      } else {
-        return false;
-      }
-    });
     enviroment.registerService("checkAllowed", async function(data) {
       let message = data.message;
       let id = data.id;
@@ -102,23 +93,28 @@ let self = {
       id,
       defaults = {}
     ) {
+      if(typeof levelSnowflake == "number"){
+        levelSnowflake = levelSnowflake.toString();
+      }
       let dbObj = {
         get: async function() {
           let template = {};
           template[id] = defaults;
-          await getType("category").ensure(levelSnowflake, template);
-          return _.defaults(
-            defaults,
-            await getType("category").get(levelSnowflake)[id]
-          );
+          await getType(level).ensure(levelSnowflake, template);
+          console.log(level+" "+levelSnowflake+" "+JSON.stringify(await getType(level).get(levelSnowflake))+' requested '+id);
+          let data = (await getType(level).get(levelSnowflake));
+          if(!data[id]){
+            data[id] = template;
+          }
+          return data[id];
         },
         set: async function(newVal) {
           let template = {};
           template[id] = defaults;
-          await getType("category").ensure(levelSnowflake, template);
-          let temp = await getType("category").get(levelSnowflake);
+          await getType(level).ensure(levelSnowflake, template);
+          let temp = await getType(level).get(levelSnowflake);
           temp[id] = newVal;
-          await getType("category").set(levelSnowflake, temp);
+          await getType(level).set(levelSnowflake, temp);
         }
       };
       return dbObj;
@@ -130,16 +126,23 @@ let self = {
       order = ["rolesCache", "guild", "category", "channel", "users"]
     ) {
       let data = {};
-
+      console.log("Using id "+id);
       for (let i = 0; i < levels.length; i++) {
         if (levels[i] == 1) {
           continue;
         }
+        console.log("stage "+order[i]+" id: "+levels[i]+" : "+ JSON.stringify(await enviroment.services
+            .fetchDatabase(levels[i], order[i], id, defaults)
+            .get()));
+        let overrides = await enviroment.services
+            .fetchDatabase(levels[i], order[i], id, defaults)
+            .get();
+        if(!overrides){
+          overrides = {}
+        }
         data = _.defaults(
           data,
-          await enviroment.services
-            .fetchDatabase(levels[i], order[i], id, defaults)
-            .get()
+          overrides
         );
       }
       return data;
@@ -156,11 +159,16 @@ let self = {
         data.message.channel.id,
         data.message.author.id + "-" + data.message.guildID
       ];
-      let result =
+      let result = false
+      console.log("Fetch Complete Data: "+JSON.stringify(await enviroment.services.fetchComplete(fetchLevels, "perms")));
+      if (self.perms.has(perm)) {
+      result =
         false ||
-        toBoolean(
-          (await enviroment.services.fetchComplete(fetchLevels, self.id))[perm]
-        );
+          toBoolean((await enviroment.services.fetchComplete(fetchLevels, "perms"))[perm]);
+        //toBoolean();
+      }else{
+      result = false;  
+      }
       return result;
     });
   },
@@ -170,7 +178,7 @@ let self = {
       console.log("OK!");
       data.appendMessage("Core loaded");
     }
-    if (message.content.includes("!terrapermcheck!")) {
+    if (message.content.includes("!terrapermcheck!") || message.content.includes("!tpc!")) {
       data.appendMessage(
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
@@ -220,6 +228,16 @@ let self = {
             }
             if(args[0] == "role"){
               data.appendMessage("Note: you must run the role compilation tool to save role permissons to a ready to use format. ");
+            }
+            //getType(args[0]).set(args[1], args[3]);
+            if(self.perms.has(args[2])){
+              let permsMap = data.services.fetchDatabase(args[1], args[0], "perms", {});
+              let temp = await permsMap.get();
+              temp[args[2]] = textToMode[args[3]];
+              console.log("Setting new value of temp to "+JSON.stringify(temp));
+              await permsMap.set(temp);
+            }else{
+              throw "Permisson not registered";
             }
           } catch (ex) {
             const errorEmbed = {
