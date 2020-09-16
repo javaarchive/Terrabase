@@ -85,6 +85,20 @@ bot.on("messageCreate", async msg => {
     );
   } else {
     // Send to processers
+    if(msg.mentions.length == 1){
+      if(msg.mentions[0].id == bot.user.id){
+        let cmd = msg.content.substring(bot.user.id.toString().length + 4);
+        //console.log(cmd);
+        if(cmd[0] == " "){
+          cmd = cmd.substring(1);
+        }
+        let cmdParts = cmd.split(" ");
+        if(cmdParts[0] == "listmodules"){
+          
+        }
+        //console.log(cmd);
+      }
+    }
     //console.log(require("./utils").compileRoletoPosition(msg.channel.guild.roles));
     let messageQueue = [];
     let embedQueue = [];
