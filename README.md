@@ -1,30 +1,22 @@
-# hello-express
+# What is Terragon
 
-A server that serves a webpage, its resources, and some data
+Terragon is a framework to write bots that are extremely customizable by you and server admins. We also want to make everything modular so you can add new features to your bot within seconds(connection rates may vary).
 
+## Finished
+* Guild/Category/Channel/User Level Permissons
+* Prototype module loader
+* Something to merge module messages together to get around rate limiting with multiple modules
 
-## Your Project
+## Working on
+* Role Level Permissons
+* Translation System
+* Module listing for bot admin
 
-On the front-end,
-
-- Edit `views/index.html` to change the content of the webpage
-- `public/client.js` is the javacript that runs when you load the webpage
-- `public/style.css` is the styles for `views/index.html`
-- Drag in `assets`, like images or music, to add them to your project
-
-On the back-end,
-
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env` (nobody can see this but you and people you invite)
-
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy.
-
-
-## Made by [Glitch](https://glitch.com/)
-
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
-
-Find out more [about Glitch](https://glitch.com/about).
-
-( ᵔ ᴥ ᵔ )
+## TODO
+* Command parser
+* Code cleanup
+* A processing message that appears when module execution is taking too long
+* Example modules
+* Documentation
+* Experimental parellel module running
+* Download and load new modules from internet (last priority)

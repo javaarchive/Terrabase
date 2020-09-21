@@ -1,10 +1,10 @@
 {
   "//1": "describes your app and its dependencies",
   "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
-  "name": "hello-express",
-  "version": "0.0.1",
-  "description": "A simple Node app built on Express, instantly up and running.",
+  "//3": "updating this file will download and update your packages if you use glitch",
+  "name": "terrabase",
+  "version": "0.2.1",
+  "description": "A discord bot making framework built on top of Eris and designed for flexibility.  ",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -30,12 +30,14 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/hello-express"
+    "url": "https://github.com/javaarchive/Terrabase"
   },
   "license": "MIT",
   "keywords": [
     "node",
     "glitch",
-    "express"
+    "express",
+    "discord",
+    "eris"
   ]
 }

@@ -73,6 +73,18 @@ let self = {
     patch(self.rolesDB);
     patch(self.rolesCacheDB);
     patch(self.usersDB);
+    // Language System
+    environment.registerService("addTranslation", function(
+      lang,
+      module,
+      key,
+      text
+    ) {
+      let changes = {};
+      changes[key] = text;
+      i18next.addResourceBundle(lang, module, changes);
+    });
+
     environment.services.saveConfig(self.id, self.config);
     function getType(type) {
       if (type == "guild") {
