@@ -1,6 +1,7 @@
 // Terragon Core: Required for permissons, config, and other stuff to function
 
 const Endb = require("endb");
+const i18next = require("i18next");
 var _ = require("lodash");
 let jsoning = require("jsoning");
 let config = new jsoning("config.json");
@@ -24,8 +25,11 @@ let self = {
   perms: new Set(),
   dataAccessMode: "blacklist",
   dataAccessBlacklist: [],
-  start: function(enviroment) {
-    enviroment.registerService("fetchConfig", function(
+  start: function(environment) {
+    environment.i18next = i18next;
+    i18next.init({ resources: {} });
+    environment.services.i18next = i18next;
+    environment.registerService("fetchConfig", function(
       moduleid,
       defaultConfig = {}
     ) {
@@ -36,17 +40,17 @@ let self = {
       }
       return _.defaults(defaultConfig, config.get(moduleid));
     });
-    enviroment.registerService("saveConfig", function(moduleid, newConfig) {
+    environment.registerService("saveConfig", function(moduleid, newConfig) {
       config.set(moduleid, newConfig);
     });
-    enviroment.registerService("registerPermisson", async function(name) {
+    environment.registerService("registerPermisson", async function(name) {
       self.perms.add(name);
     });
-    enviroment.registerService("checkAllowed", async function(data) {
+    environment.registerService("checkAllowed", async function(data) {
       let message = data.message;
       let id = data.id;
     });
-    self.config = enviroment.services.fetchConfig(self.id, {
+    self.config = environment.services.fetchConfig(self.id, {
       serversDatabase: "sqlite://servers.db",
       categoriesDatabase: "sqlite://categories.db",
       channelsDatabase: "sqlite://channels.db",
@@ -54,20 +58,22 @@ let self = {
       rolesCacheDatabase: "sqlite://rolescache.db",
       usersDatabase: "sqlite://users.db"
     });
-    enviroment.services.registerPermisson("core.admin");
+    environment.services.registerPermisson("core.admin");
+    // Setup dbs
     self.guildsDB = new Endb(self.config.serversDatabase);
     self.categoriesDB = new Endb(self.config.categoriesDatabase);
     self.channelsDB = new Endb(self.config.channelsDatabase);
     self.rolesDB = new Endb(self.config.rolesDatabase);
     self.rolesCacheDB = new Endb(self.config.rolesCacheDatabase);
     self.usersDB = new Endb(self.config.usersDatabase);
+    // Upgrade endb with new features
     patch(self.guildsDB);
     patch(self.categoriesDB);
     patch(self.channelsDB);
     patch(self.rolesDB);
     patch(self.rolesCacheDB);
     patch(self.usersDB);
-    enviroment.services.saveConfig(self.id, self.config);
+    environment.services.saveConfig(self.id, self.config);
     function getType(type) {
       if (type == "guild") {
         return self.guildsDB;
@@ -89,7 +95,7 @@ let self = {
       }
       return undefined;
     }
-    enviroment.registerService("fetchDatabase", function(
+    environment.registerService("fetchDatabase", function(
       levelSnowflake,
       level,
       id,
@@ -129,7 +135,7 @@ let self = {
       };
       return dbObj;
     });
-    enviroment.registerService("fetchComplete", async function(
+    environment.registerService("fetchComplete", async function(
       levels,
       id,
       defaults = {},
@@ -148,12 +154,12 @@ let self = {
             levels[i] +
             " : " +
             JSON.stringify(
-              await enviroment.services
+              await environment.services
                 .fetchDatabase(levels[i], order[i], id, defaults)
                 .get()
             )
         );
-        let overrides = await enviroment.services
+        let overrides = await environment.services
           .fetchDatabase(levels[i], order[i], id, defaults)
           .get();
         if (!overrides) {
@@ -163,7 +169,7 @@ let self = {
       }
       return data;
     });
-    enviroment.registerService("checkPerm", async function(data, perm) {
+    environment.registerService("checkPerm", async function(data, perm) {
       //console.log(typeof data.message);
       let rtp = utils.compileRoletoPosition(data.message.channel.guild);
       let fetchLevels = [
@@ -179,14 +185,14 @@ let self = {
       console.log(
         "Fetch Complete Data: " +
           JSON.stringify(
-            await enviroment.services.fetchComplete(fetchLevels, "perms")
+            await environment.services.fetchComplete(fetchLevels, "perms")
           )
       );
       if (self.perms.has(perm)) {
         result =
           false ||
           toBoolean(
-            (await enviroment.services.fetchComplete(fetchLevels, "perms"))[
+            (await environment.services.fetchComplete(fetchLevels, "perms"))[
               perm
             ]
           );

@@ -5,8 +5,11 @@ var bot = new Eris(process.env.token);
 // Module loader
 let modules = [];
 // Modules that provide services to other modules need to be regsitered first
-modules.push(require("./examplemodule"));
 modules.push(require("./core"));
+modules.push(require("./examplemodule"));
+
+// Main Code
+
 const EventEmitter = require("events");
 class BotEventService extends EventEmitter {}
 const botEventService = new BotEventService();
