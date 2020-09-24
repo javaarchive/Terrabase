@@ -85,10 +85,13 @@ let self = {
       i18next.addResourceBundle(lang, module, changes);
     });
     environment.registerService("getTranslation", async function(
-      lang, module, translationID
+      lang,
+      module,
+      translationID
     ) {
       await i18next.changeLanguage(lang);
-      return i18next.t(module+":"+translationID);
+      i18next.setDefaultNamespace(module);
+      return i18next.t(translationID);
     });
 
     environment.services.saveConfig(self.id, self.config);
