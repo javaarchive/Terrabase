@@ -18,6 +18,23 @@ const textToMode = {
   false: false,
   true: true
 };
+// Configuration for default values for stuff global between modules
+const defaultValuesForGlobals = {
+  prefix: "?"
+}
+function getFetchLevels(message){
+  let rtp = utils.compileRoletoPosition(message.channel.guild);
+  let fetchLevels = [
+        message.member.roles.length > 0
+          ? utils.fetchMaxRole(message.member.roles, rtp)
+          : 1,
+        message.channel.guild.id,
+        message.channel.parentID || 1,
+        message.channel.id,
+        message.author.id + "-" + message.guildID
+      ];
+  return fetchLevels;
+}
 let self = {
   name: "Core",
   id: "core",
@@ -162,6 +179,7 @@ let self = {
       defaults = {},
       order = ["rolesCache", "guild", "category", "channel", "users"]
     ) {
+      // Fetch from all three levels
       let data = {};
       console.log("Using id " + id);
       for (let i = 0; i < levels.length; i++) {
@@ -192,16 +210,7 @@ let self = {
     });
     environment.registerService("checkPerm", async function(data, perm) {
       //console.log(typeof data.message);
-      let rtp = utils.compileRoletoPosition(data.message.channel.guild);
-      let fetchLevels = [
-        data.message.member.roles.length > 0
-          ? utils.fetchMaxRole(data.message.member.roles, rtp)
-          : 1,
-        data.message.channel.guild.id,
-        data.message.channel.parentID || 1,
-        data.message.channel.id,
-        data.message.author.id + "-" + data.message.guildID
-      ];
+      let fetchLevels = getFetchLevels(data.message);
       let result = false;
       console.log(
         "Fetch Complete Data: " +
@@ -222,6 +231,10 @@ let self = {
         result = false;
       }
       return result;
+    });
+    // Non-essentials
+    environment.registerService("fetchGlobals", function(){
+      return environment.services.fetchComplete()
     });
   },
   handle: async function(data) {
