@@ -84,10 +84,10 @@ let self = {
       changes[key] = text;
       i18next.addResourceBundle(lang, module, changes);
     });
-    environment.registerService("getTranslation", function(
+    environment.registerService("getTranslation", async function(
       lang, module, translationID
     ) {
-      i18next.setLanguage(lang);
+      await i18next.changeLanguage(lang);
       return i18next.t(module+":"+translationID);
     });
 
