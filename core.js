@@ -84,6 +84,12 @@ let self = {
       changes[key] = text;
       i18next.addResourceBundle(lang, module, changes);
     });
+    environment.registerService("getTranslation", function(
+      lang, module, translationID
+    ) {
+      i18next.setLanguage(lang);
+      return i18next.t(module+":"+translationID);
+    });
 
     environment.services.saveConfig(self.id, self.config);
     function getType(type) {
