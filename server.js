@@ -10,6 +10,7 @@ modules.push(require("./examplemodule"));
 
 // Main Code
 
+(async function(){
 const EventEmitter = require("events");
 class BotEventService extends EventEmitter {}
 const botEventService = new BotEventService();
@@ -41,12 +42,12 @@ let globals = {
     globals.services[name] = service;
   }
 };
-bot.on("ready", () => {
+bot.on("ready", async () => {
   console.log("System Up");
   botEventService.emit("started");
   for (let i = 0; i < modules.length; i++) {
     try {
-      modules[i].start(globals);
+      await modules[i].start(globals);
     } catch (ex) {
       console.warn("Internal Error whie loading the " + i + "th module " + ex);
       modules.splice(i, 1);
@@ -139,3 +140,4 @@ http
   })
   .listen(8080); //the server object listens on port 8080
 console.log("All systems have loaded");
+})().then(console.log);

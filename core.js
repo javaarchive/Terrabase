@@ -4,7 +4,7 @@ const Endb = require("endb");
 const i18next = require("i18next");
 var _ = require("lodash");
 let jsoning = require("jsoning");
-let config = new jsoning("config.json");
+let config = new jsoning(__dirname+"/config.json"); // Load config
 const utils = require("./utils");
 const { patch } = require("./endbpp");
 function toBoolean(obj) {
@@ -42,23 +42,23 @@ let self = {
   perms: new Set(),
   dataAccessMode: "blacklist",
   dataAccessBlacklist: [],
-  start: function(environment) {
+  start: async function(environment) {
     environment.i18next = i18next;
     i18next.init({ resources: {} });
     environment.services.i18next = i18next;
-    environment.registerService("fetchConfig", function(
+    environment.registerService("fetchConfig", async function(
       moduleid,
       defaultConfig = {}
     ) {
       defaultConfig = defaultConfig || {};
-      if (!config.has(moduleid)) {
-        config.set(moduleid, defaultConfig);
+      if (!(await config.has(moduleid)) ) {
+        await config.set(moduleid, defaultConfig);
         return defaultConfig;
       }
       return _.defaults(defaultConfig, config.get(moduleid));
     });
-    environment.registerService("saveConfig", function(moduleid, newConfig) {
-      config.set(moduleid, newConfig);
+    environment.registerService("saveConfig", async function(moduleid, newConfig) {
+      await config.set(moduleid, newConfig);
     });
     environment.registerService("registerPermisson", async function(name) {
       self.perms.add(name);
@@ -67,7 +67,7 @@ let self = {
       let message = data.message;
       let id = data.id;
     });
-    self.config = environment.services.fetchConfig(self.id, {
+    self.config = await environment.services.fetchConfig(self.id, {
       serversDatabase: "sqlite://servers.db",
       categoriesDatabase: "sqlite://categories.db",
       channelsDatabase: "sqlite://channels.db",
@@ -232,9 +232,11 @@ let self = {
       }
       return result;
     });
+    environment.registerService("getFetchLevelsFromMessage", getFetchLevels);
     // Non-essentials
-    environment.registerService("fetchGlobals", function(){
-      return environment.services.fetchComplete()
+    environment.registerService("fetchGlobals", async function(data){
+      let fetchLevels = getFetchLevels(data.message);
+      return await (environment.services.fetchComplete(getFetchLevels, "global", defaultValuesForGlobals).get());
     });
   },
   handle: async function(data) {
