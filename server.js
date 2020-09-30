@@ -7,6 +7,7 @@ let modules = [];
 // Modules that provide services to other modules need to be regsitered first
 modules.push(require("./core"));
 modules.push(require("./examplemodule"));
+//moduleNames = ["./core","./c"];
 
 // Main Code
 
@@ -46,14 +47,17 @@ modules.push(require("./examplemodule"));
     },
     registerService: function(name, service) {
       globals.services[name] = service;
-    }
+    },
+    workQueue: []
   };
   bot.on("ready", async () => {
     console.log("System Up");
     botEventService.emit("started");
     for (let i = 0; i < modules.length; i++) {
       try {
+        await botEventService.emit("modulebeforeload", modules[i]);
         await modules[i].start(globals);
+        await botEventService.emit("moduleafterload", modules[i]);
       } catch (ex) {
         console.warn(
           "Internal Error whie loading the " + i + "th module " + ex
@@ -105,7 +109,9 @@ modules.push(require("./examplemodule"));
             cmd = cmd.substring(1);
           }
           let cmdParts = cmd.split(" ");
+          
           if (cmdParts[0] == "listmodules") {
+            bot.createMessage(msg.channel.id, "```"+modules.map(x => x.id).join(",") + "```");
           }
           //console.log(cmd);
         }
