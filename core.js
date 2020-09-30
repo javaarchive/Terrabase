@@ -160,6 +160,7 @@ let self = {
           if (!data[id]) {
             data[id] = template;
           }
+          //console.log("Final "+JSON.stringify(data[id]));
           return data[id];
         },
         set: async function(newVal) {
@@ -181,6 +182,7 @@ let self = {
     ) {
       // Fetch from all three levels
       let data = {};
+      //data[id] = defaults;
       console.log("Using id " + id);
       for (let i = 0; i < levels.length; i++) {
         if (levels[i] == 1) {
@@ -194,18 +196,20 @@ let self = {
             " : " +
             JSON.stringify(
               await environment.services
-                .fetchDatabase(levels[i], order[i], id, defaults)
+                .fetchDatabase(levels[i], order[i], id, {})
                 .get()
             )
         );
         let overrides = await environment.services
-          .fetchDatabase(levels[i], order[i], id, defaults)
+          .fetchDatabase(levels[i], order[i], id, {})
           .get();
         if (!overrides) {
           overrides = {};
         }
         data = _.defaults(data, overrides);
+        
       }
+      console.log(JSON.stringify(data));
       return data;
     });
     environment.registerService("checkPerm", async function(data, perm) {
@@ -315,6 +319,7 @@ let self = {
                 "Setting new value of temp to " + JSON.stringify(temp)
               );
               await permsMap.set(temp);
+              data.appendMessage("Permisson `"+args[2] + "` has been set");
             } else {
               throw "Permisson not registered";
             }
