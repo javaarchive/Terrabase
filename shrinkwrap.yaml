@@ -6,6 +6,7 @@ dependencies:
   endb: 1.3.0
   eris: 0.13.3
   erlpack: 0.1.3
+  event-chains: 0.0.8
   express: 4.17.1
   i18next: 19.7.0
   jsoning: 0.8.15
@@ -359,6 +360,10 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
+  /event-chains/0.0.8:
+    dev: false
+    resolution:
+      integrity: sha1-MZozCDyaN0dk2VlkIWUSzzOOmBM=
   /express/4.17.1:
     dependencies:
       accepts: 1.3.7
@@ -1480,6 +1485,7 @@ specifiers:
   endb: ^1.3.0
   eris: ^0.13.3
   erlpack: ^0.1.3
+  event-chains: ^0.0.8
   express: ^4.17.1
   i18next: ^19.7.0
   jsoning: ^0.8.15

@@ -11,23 +11,23 @@ modules.push(require("./examplemodule"));
 // Main Code
 
 (async function(){
-const EventEmitter = require("events");
+const EventEmitter = require("event-chains");
 class BotEventService extends EventEmitter {}
 const botEventService = new BotEventService();
-bot.on("guildCreate", guild => {
-  botEventService.emit("joinguild", guild);
+bot.on("guildCreate", async guild => {
+  await botEventService.emit("joinguild", guild);
 });
-bot.on("guildDelete", guild => {
-  botEventService.emit("leaveguild", guild);
+bot.on("guildDelete", async guild => {
+  await botEventService.emit("leaveguild", guild);
 });
-bot.on("guildMemberAdd", (guild, member) => {
-  botEventService.emit("guildmemberjoin", { guild: guild, member: member });
+bot.on("guildMemberAdd", async (guild, member) => {
+  await botEventService.emit("guildmemberjoin", { guild: guild, member: member });
 });
-bot.on("guildMemberRemove", (guild, member) => {
-  botEventService.emit("guildmemberleave", { guild: guild, member: member });
+bot.on("guildMemberRemove", async (guild, member) => {
+  await botEventService.emit("guildmemberleave", { guild: guild, member: member });
 });
-bot.on("messageDelete", msg => {
-  botEventService.emit("messagedelete", msg);
+bot.on("messageDelete", async msg => {
+  await botEventService.emit("messagedelete", msg);
 });
 
 let globals = {
