@@ -4,7 +4,7 @@ const Endb = require("endb");
 const i18next = require("i18next");
 var _ = require("lodash");
 let jsoning = require("jsoning");
-let config = new jsoning(__dirname+"/config.json"); // Load config
+let config = new jsoning(__dirname + "/config.json"); // Load config
 const utils = require("./utils");
 const { patch } = require("./endbpp");
 function toBoolean(obj) {
@@ -21,18 +21,18 @@ const textToMode = {
 // Configuration for default values for stuff global between modules
 const defaultValuesForGlobals = {
   prefix: "?"
-}
-function getFetchLevels(message){
+};
+function getFetchLevels(message) {
   let rtp = utils.compileRoletoPosition(message.channel.guild);
   let fetchLevels = [
-        message.member.roles.length > 0
-          ? utils.fetchMaxRole(message.member.roles, rtp)
-          : 1,
-        message.channel.guild.id,
-        message.channel.parentID || 1,
-        message.channel.id,
-        message.author.id + "-" + message.guildID
-      ];
+    message.member.roles.length > 0
+      ? utils.fetchMaxRole(message.member.roles, rtp)
+      : 1,
+    message.channel.guild.id,
+    message.channel.parentID || 1,
+    message.channel.id,
+    message.author.id + "-" + message.guildID
+  ];
   return fetchLevels;
 }
 let self = {
@@ -51,13 +51,16 @@ let self = {
       defaultConfig = {}
     ) {
       defaultConfig = defaultConfig || {};
-      if (!(await config.has(moduleid)) ) {
+      if (!(await config.has(moduleid))) {
         await config.set(moduleid, defaultConfig);
         return defaultConfig;
       }
       return _.defaults(defaultConfig, config.get(moduleid));
     });
-    environment.registerService("saveConfig", async function(moduleid, newConfig) {
+    environment.registerService("saveConfig", async function(
+      moduleid,
+      newConfig
+    ) {
       await config.set(moduleid, newConfig);
     });
     environment.registerService("registerPermisson", async function(name) {
@@ -181,7 +184,7 @@ let self = {
       order = ["rolesCache", "guild", "category", "channel", "users"]
     ) {
       // Fetch from all three levels
-      let data = {};
+      let data = defaults;
       //data[id] = defaults;
       console.log("Using id " + id);
       for (let i = 0; i < levels.length; i++) {
@@ -207,7 +210,6 @@ let self = {
           overrides = {};
         }
         data = _.defaults(data, overrides);
-        
       }
       console.log(JSON.stringify(data));
       return data;
@@ -238,9 +240,11 @@ let self = {
     });
     environment.registerService("getFetchLevelsFromMessage", getFetchLevels);
     // Non-essentials
-    environment.registerService("fetchGlobals", async function(data){
+    environment.registerService("fetchGlobals", async function(data) {
       let fetchLevels = getFetchLevels(data.message);
-      return await (environment.services.fetchComplete(getFetchLevels, "global", defaultValuesForGlobals).get());
+      return await environment.services
+        .fetchComplete(getFetchLevels, "global", defaultValuesForGlobals)
+        .get();
     });
   },
   handle: async function(data) {
@@ -319,7 +323,7 @@ let self = {
                 "Setting new value of temp to " + JSON.stringify(temp)
               );
               await permsMap.set(temp);
-              data.appendMessage("Permisson `"+args[2] + "` has been set");
+              data.appendMessage("Permisson `" + args[2] + "` has been set");
             } else {
               throw "Permisson not registered";
             }
