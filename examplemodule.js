@@ -2,8 +2,8 @@ let self = {
   name: "Example command",
   id: "examplecmd",
   commands: [],
-  start: function(enviroment) {
-    enviroment.services.botEventService.on("memberJoin", function(data) {});
+  start: function(environment) {
+    environment.services.botEventService.on("memberJoin", function(data) {});
   },
   handle: function(data) {
     let message = data.message;
