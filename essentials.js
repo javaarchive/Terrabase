@@ -10,7 +10,7 @@ let self = {
       environment.services.registerPermisson(module.id+".enabled");
     });
     environment.registerService("checkedAllowed", async function(data){
-      return await environment.services.checkPerm(data.id+".enabled");
+      return (await environment.services.checkPerm(data.id+".enabled"));
     });
   },
   handle: function(data) {

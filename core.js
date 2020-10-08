@@ -8,6 +8,7 @@ let config = new jsoning(__dirname + "/config.json"); // Load config
 const utils = require("./utils");
 const { patch } = require("./endbpp");
 function toBoolean(obj) {
+  console.log("Classifying "+obj);
   if (obj == undefined || obj == null || obj == false) {
     return false;
   }
