@@ -4,23 +4,32 @@ let self = {
   commands: ["exampletext"],
   start: function(environment) {
     environment.services.botEventService.on("memberJoin", function(data) {});
-    environment.services.registerPermisson(self.id+".exampletextcmd");
+    environment.services.registerPermisson(self.id + ".exampletextcmd");
   },
   handle: async function(data) {
     let message = data.message;
     let allowed = await data.services.checkAllowed({
-      message: message,
+      message: data.message,
       id: self.id,
       name: self.name
     });
-    if (!allowed) {
-      console.log("example module disabled")
+    if (!data.services.checkBot(message)) {
       return;
     }
-    if(data.services.checkPerm(self.id+".exampletextcmd")){
+    if (!allowed) {
+      console.log("example module disabled");
+      return;
+    }
+    if (
+      data.message.content.startsWith(
+        (await data.services.getPrefix(data)) + "exampletext"
+      )
+    ) {
+      if (data.services.checkPerm(self.id + ".exampletextcmd")) {
         data.appendMessage("Untranslated Command Test");
-    }else{
-      data.appendMessage("Untranslated Test Command not allowed");
+      } else {
+        data.appendMessage("Untranslated Test Command not allowed");
+      }
     }
   }
 };

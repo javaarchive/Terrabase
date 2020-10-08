@@ -9,7 +9,7 @@ const utils = require("./utils");
 const { patch } = require("./endbpp");
 function toBoolean(obj) {
   //console.log("Classifying "+obj);
-  if(obj == true){
+  if (obj == true) {
     return true;
   }
   if (obj == undefined || obj == null || obj == false) {
@@ -221,6 +221,7 @@ let self = {
     });
     environment.registerService("checkPerm", async function(data, perm) {
       //console.log(typeof data.message);
+      console.log("Checking " + JSON.stringify(data));
       let fetchLevels = getFetchLevels(data.message);
       let result = false;
       console.log(
@@ -247,9 +248,11 @@ let self = {
     // Non-essentials
     environment.registerService("fetchGlobals", async function(data) {
       let fetchLevels = getFetchLevels(data.message);
-      return await environment.services
-        .fetchComplete(getFetchLevels, "global", defaultValuesForGlobals)
-        .get();
+      return await environment.services.fetchComplete(
+        getFetchLevels,
+        "global",
+        defaultValuesForGlobals
+      );
     });
     console.log("Core init finished");
   },
@@ -267,9 +270,9 @@ let self = {
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
     }
-    if(message.content.startsWith("permslist")){
-      data.appendMessage("`Count: "+self.perms.size+"`");
-      data.appendMessage("`" + JSON.stringify([...self.perms])+  "`");
+    if (message.content.startsWith("permslist")) {
+      data.appendMessage("`Count: " + self.perms.size + "`");
+      data.appendMessage("`" + JSON.stringify([...self.perms]) + "`");
     }
     if (message.content.startsWith("permsconfig")) {
       if (message.member.permission.has("administrator")) {
