@@ -6,7 +6,7 @@ let self = {
     environment.registerService("getPrefix", async function(){
         return (await environment.fetchGlobals())["prefix"] || ".";
     });
-    environment.services.botEventService.on(["modulebeforeload"], async function(module){
+    environment.services.botEventService.on("modulebeforeload", async function(module){
       environment.services.registerPermisson(module.id+".enabled");
     });
     environment.registerService("checkedAllowed", async function(data){

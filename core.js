@@ -43,6 +43,7 @@ let self = {
   dataAccessMode: "blacklist",
   dataAccessBlacklist: [],
   start: async function(environment) {
+    console.log("Launching core");
     environment.i18next = i18next;
     i18next.init({ resources: {} });
     environment.services.i18next = i18next;
@@ -246,6 +247,7 @@ let self = {
         .fetchComplete(getFetchLevels, "global", defaultValuesForGlobals)
         .get();
     });
+    console.log("Core init finished");
   },
   handle: async function(data) {
     let message = data.message;
@@ -262,7 +264,8 @@ let self = {
       );
     }
     if(message.content.startsWith("permslist")){
-      data.appendMessage("`" + JSON.stringify(self.perms) +  "`");
+      data.appendMessage("`Count: "+self.perms.size+"`");
+      data.appendMessage("`" + JSON.stringify([...self.perms])+  "`");
     }
     if (message.content.startsWith("permsconfig")) {
       if (message.member.permission.has("administrator")) {
