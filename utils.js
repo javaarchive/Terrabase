@@ -9,7 +9,8 @@ const self = {
     return self.sortRoles(roleList, roles)[roleList.length - 1];
   },
   sortRoles: function(roleList, roles){
-    roleList.sort((a, b) => (a.position > b.position) ? 1 : -1)
+    roleList.sort((a, b) => (a.position > b.position) ? 1 : -1);
+    return roleList;
   }
 }
 module.exports = self;

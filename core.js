@@ -261,6 +261,9 @@ let self = {
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
     }
+    if(message.content.startsWith("permslist")){
+      data.appendMessage("`" + JSON.stringify(self.perms) +  "`");
+    }
     if (message.content.startsWith("permsconfig")) {
       if (message.member.permission.has("administrator")) {
         data.appendMessage("You have sufficent permissons: welcome!");

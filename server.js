@@ -6,6 +6,7 @@ var bot = new Eris(process.env.token);
 let modules = [];
 // Modules that provide services to other modules need to be regsitered first
 modules.push(require("./core"));
+modules.push(require("./essentials"));
 modules.push(require("./examplemodule"));
 //moduleNames = ["./core","./c"];
 
@@ -48,7 +49,7 @@ modules.push(require("./examplemodule"));
     registerService: function(name, service) {
       globals.services[name] = service;
     },
-    workQueue: []
+    workQueue: [] // Simple queue for now
   };
   bot.on("ready", async () => {
     console.log("System Up");

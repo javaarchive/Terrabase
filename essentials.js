@@ -9,6 +9,9 @@ let self = {
     environment.services.botEventService.on("modulebeforeload", async function(module){
       environment.services.registerPermisson(module.id+".enabled");
     });
+    environment.services.botEventService.on("checkedAllowed", async function(data){
+      return await environment.services.checkPerm(data.id+".enabled");
+    });
   },
   handle: function(data) {
     let message = data.message;
