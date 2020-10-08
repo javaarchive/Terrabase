@@ -9,8 +9,10 @@ let self = {
     environment.services.botEventService.on("modulebeforeload", async function(module){
       environment.services.registerPermisson(module.id+".enabled");
     });
-    environment.registerService("checkedAllowed", async function(data){
-      return (await environment.services.checkPerm(data.id+".enabled"));
+    environment.registerService("checkAllowed", async function(data){
+      let allowed = (await environment.services.checkPerm(data,data.id+".enabled"));
+      console.log("Allow state: "+allowed+" : "  +JSON.stringify(data))
+      return allowed;
     });
   },
   handle: function(data) {

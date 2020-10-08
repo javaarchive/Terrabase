@@ -8,7 +8,10 @@ let config = new jsoning(__dirname + "/config.json"); // Load config
 const utils = require("./utils");
 const { patch } = require("./endbpp");
 function toBoolean(obj) {
-  console.log("Classifying "+obj);
+  //console.log("Classifying "+obj);
+  if(obj == true){
+    return true;
+  }
   if (obj == undefined || obj == null || obj == false) {
     return false;
   }
@@ -68,10 +71,10 @@ let self = {
     environment.registerService("registerPermisson", async function(name) {
       self.perms.add(name);
     });
-    environment.registerService("checkAllowed", async function(data) {
+    /*environment.registerService("checkAllowed", async function(data) {
       let message = data.message;
       let id = data.id;
-    });
+    });*/
     self.config = await environment.services.fetchConfig(self.id, {
       serversDatabase: "sqlite://servers.db",
       categoriesDatabase: "sqlite://categories.db",
