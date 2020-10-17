@@ -5,6 +5,13 @@ let self = {
   start: function(environment) {
     environment.services.botEventService.on("memberJoin", function(data) {});
     environment.services.registerPermisson(self.id + ".exampletextcmd");
+    environment.services.addTranslation("en", self.id, "testtext", "Test text");
+    environment.services.addTranslation(
+      "en",
+      self.id,
+      "commanddenied",
+      "This command has been disabled"
+    );
   },
   handle: async function(data) {
     let message = data.message;
@@ -20,15 +27,16 @@ let self = {
       console.log("example module disabled");
       return;
     }
-    if (
-      data.message.content.startsWith(
-        (await data.services.getPrefix(data)) + "exampletext"
-      )
-    ) {
+    let prefix = await data.services.getPrefix(data);
+    if (data.message.content.startsWith(prefix + "exampletext")) {
       if (data.services.checkPerm(self.id + ".exampletextcmd")) {
-        data.appendMessage("Untranslated Command Test");
+        data.appendMessage(
+          await data.services.getTranslation("en", self.id, "testtext")
+        );
       } else {
-        data.appendMessage("Untranslated Test Command not allowed");
+        data.appendMessage(
+          await data.services.getTranslation("en", self.id, "commanddenied")
+        );
       }
     }
   }

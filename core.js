@@ -28,6 +28,7 @@ const defaultValuesForGlobals = {
 };
 function getFetchLevels(message) {
   let rtp = utils.compileRoletoPosition(message.channel.guild);
+  //console.log(message.member);
   let fetchLevels = [
     message.member.roles.length > 0
       ? utils.fetchMaxRole(message.member.roles, rtp)

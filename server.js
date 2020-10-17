@@ -140,7 +140,7 @@ modules.push(require("./examplemodule"));
       if (finalenv.messageQueue.length > 0) {
         bot.createMessage(msg.channel.id, {
           content: finalenv.messageQueue.join("\n"),
-          embed: embedQueue[0]
+          embed: embedQueue[0] // One embed per message, temp solution
         });
       }
     }
