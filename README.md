@@ -6,10 +6,11 @@ Terragon is a framework to write bots that are extremely customizable by you and
 * Guild/Category/Channel/User Level Permissons
 * Prototype module loader
 * Something to merge module messages together to get around rate limiting with multiple modules
+* Translation System
 
 ## Working on
 * Role Level Permissons
-* Translation System
+* Class Level Stuff
 * Module listing for bot admin
 
 ## TODO

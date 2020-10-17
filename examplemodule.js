@@ -29,7 +29,7 @@ let self = {
     }
     let prefix = await data.services.getPrefix(data);
     if (data.message.content.startsWith(prefix + "exampletext")) {
-      if (data.services.checkPerm(self.id + ".exampletextcmd")) {
+      if ((await data.services.checkPerm(data, self.id + ".exampletextcmd"))) {
         data.appendMessage(
           await data.services.getTranslation("en", self.id, "testtext")
         );
