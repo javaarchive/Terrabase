@@ -255,6 +255,11 @@ let self = {
         defaultValuesForGlobals
       );
     });
+    // Add admins list if not yet
+    if(!(await jsoning.has("adminIDs"))){
+      await jsoning.set("adminIDs",[]);
+    }
+    
     console.log("Core init finished");
   },
   handle: async function(data) {
@@ -276,7 +281,7 @@ let self = {
       data.appendMessage("`" + JSON.stringify([...self.perms]) + "`");
     }
     if (message.content.startsWith("permsconfig")) {
-      if (message.member.permission.has("administrator")) {
+      if (message.member.permission.has("administrator") || (await data.services.checkPerm(data, "core.admin"))) {
         data.appendMessage("You have sufficent permissons: welcome!");
         if (message.content.length == "permsconfig".length) {
           data.appendEmbed({
@@ -325,6 +330,20 @@ let self = {
             }
             //getType(args[0]).set(args[1], args[3]);
             if (self.perms.has(args[2])) {
+              // Check user has permisson to modify channel/guild/role/user
+              if(args[1].length < 8){
+                throw "Suspcious Snowflake";
+              }
+              try{
+                if((args[0] == "channel" || args[0] == "category")){
+                  if(message.guildID != data.client.channelGuildMap[args[1]]){
+                    throw "You can only modify permissons for channels/categories/roles in this server";
+                  }
+                }
+              }catch(ex){
+                throw "Could not locate channel/guild/role: "+ex;
+              }
+              // Fetch perms
               let permsMap = data.services.fetchDatabase(
                 args[1],
                 args[0],

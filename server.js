@@ -49,7 +49,8 @@ modules.push(require("./examplemodule"));
     registerService: function(name, service) {
       globals.services[name] = service;
     },
-    workQueue: [] // Simple queue for now
+    workQueue: [], // Simple queue for now
+    client: bot
   };
   bot.on("ready", async () => {
     console.log("System Up");
@@ -129,8 +130,7 @@ modules.push(require("./examplemodule"));
         appendEmbed: function(embed) {
           embedQueue.push(embed);
         },
-        message: msg,
-        client: bot
+        message: msg
       };
       let finalenv = { ...extras, ...globals };
       for (let i = 0; i < modules.length; i++) {
