@@ -222,7 +222,7 @@ let self = {
     });
     environment.registerService("checkPerm", async function(data, perm) {
       //console.log(typeof data.message);
-      console.log("Checking " + JSON.stringify(data));
+      //console.log("Checking " + JSON.stringify(data));
       let fetchLevels = getFetchLevels(data.message);
       let result = false;
       console.log(
@@ -256,10 +256,14 @@ let self = {
       );
     });
     // Add admins list if not yet
-    if(!(await jsoning.has("adminIDs"))){
-      await jsoning.set("adminIDs",[]);
+    if(!(await config.has("adminIDs"))){
+      console.log("Creating admin IDS");
+      await config.set("adminIDs",[]);
     }
-    
+    environment.admins = await config.get("adminIDs");
+    environment.registerService("isAdmin", async function(userID){
+      return environment.admins.includes(userID);
+    })
     console.log("Core init finished");
   },
   handle: async function(data) {
@@ -275,6 +279,7 @@ let self = {
       data.appendMessage(
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
+      console.log("Current admins "+data.admins);
     }
     if (message.content.startsWith("permslist")) {
       data.appendMessage("`Count: " + self.perms.size + "`");
@@ -336,6 +341,10 @@ let self = {
               }
               try{
                 if((args[0] == "channel" || args[0] == "category")){
+                  if(!(args[1] in data.client.channelGuildMap)){
+                    throw "Your channel/category/role is not in the cache. ";
+                    
+                  }
                   if(message.guildID != data.client.channelGuildMap[args[1]]){
                     throw "You can only modify permissons for channels/categories/roles in this server";
                   }

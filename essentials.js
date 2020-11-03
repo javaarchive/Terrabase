@@ -25,6 +25,9 @@ let self = {
       id: self.id,
       name: self.name
     });
+    if(data.message.author.id){
+      
+    }
     if (!allowed) {
       return;
     }
