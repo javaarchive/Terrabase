@@ -310,7 +310,7 @@ let self = {
     }
     if (message.content.startsWith("permsconfig")) {
       if (message.member.permission.has("administrator") || (await data.services.checkPerm(data, "core.admin"))) {
-        data.appendMessage("You have sufficent permissons: welcome!");
+        data.appendMessage("Hello there. ");
         if (message.content.length == "permsconfig".length) {
           data.appendEmbed({
             title: "Permisson Configurator",
@@ -322,13 +322,13 @@ let self = {
               url: "https://cdn.discordapp.com/embed/avatars/0.png"
             },
             author: {
-              name: "Terrabase Permissons Guide",
+              name: "Untranslated Terrabase Permissons Guide",
               url: "https://github.com/javaarchive/Terrabase",
               icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
             },
             fields: [
               {
-                name: "You already know how to use it",
+                name: "How to use?",
                 value:
                   "It's just like discord's permissons system except the priorties are a bit different. First guild level permissons are applied then the category permissons override those if you use categories. Then the channel level permissons are applied and finally the role level and user level permissons are applied. This order will defintley change in the future because I think roles should be somewhere else. "
               }
@@ -362,19 +362,21 @@ let self = {
               if(args[1].length < 8){
                 throw "Suspcious Snowflake";
               }
-              try{
-                if((args[0] == "channel" || args[0] == "category")){
-                  if(!(args[1] in data.client.channelGuildMap)){
-                    throw "Your channel/category/role is not in the cache. ";
-                    
-                  }
-                  if(message.guildID != data.client.channelGuildMap[args[1]]){
-                    throw "You can only modify permissons for channels/categories/roles in this server";
-                  }
+              let sf = args[1];
+              if(args[0] == "guild"){
+                if(guildID != sf){
+                  throw "You must be in the same guild as you are configuring to modify permissons";
                 }
-              }catch(ex){
-                throw "Could not locate channel/guild/role: "+ex;
               }
+              if(args[0] == "channel" || args[0] == "category"){
+                if(!(self.parentDB.has(args[1]))){
+                  throw "Unable to find which guild that channel/category is in. You will need to send at least one message in the channel or in a channel in the category if you are modifying a category. "; 
+                }
+                if(guildID != sf){
+                  throw "You must be in the same guild as you are configuring to modify permissons";
+                }
+              }
+              
               // Fetch perms
               let permsMap = data.services.fetchDatabase(
                 args[1],
