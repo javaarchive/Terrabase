@@ -1,0 +1,91 @@
+<!doctype html>
+<title>Our Glitch neighborhood created by wh0</title>
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  #disp {
+    margin: -0.2em -0.5em;
+    border-spacing: 0.5em 0.2em;
+  }
+  th {
+    text-align: left;
+  }
+  td {
+    vertical-align: baseline;
+  }
+  .project-id {
+    font-family: monospace;
+  }
+  .private {
+    color: #a0a0a0;
+  }
+</style>
+<h1>👋 Heya neighbors!</h1>
+<p>
+  What other projects are on this server?
+  I figure we could look up those project IDs we see in the loop devices.
+</p>
+<table id="disp">
+  <tr>
+    <th>Device</th>
+    <th>Project ID</th>
+    <th>Project</th>
+  </tr>
+</table>
+<script>
+  const pattern = /^(\S+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\/rbd\/pnpm-volume\/vols\/([0-9a-f-]{36})\.vol$/gm;
+  const disp = document.getElementById('disp');
+  (async function () {
+    try {
+      const resLosetup = await fetch('/losetup');
+      const out = await resLosetup.text();
+      while (true) {
+        const m = pattern.exec(out);
+        if (!m) break;
+        const [, dev, projectId] = m;
+        const v = disp.insertRow();
+        const vDev = v.insertCell();
+        vDev.className = 'dev';
+        vDev.textContent = dev;
+        const vProjectId = v.insertCell();
+        vProjectId.className = 'project-id';
+        vProjectId.textContent = projectId;
+        const vProject = v.insertCell();
+        (async function () {
+          let project;
+          try {
+            const resProject = await fetch(`https://api.glitch.com/v1/projects/by/id?id=${projectId}`);
+            if (!resProject.ok) throw new Error(`API status ${resProject.status} ${resProject.statusText}`);
+            const projectDict = await resProject.json();
+            if (!(projectId in projectDict)) {
+              vProject.className = 'private';
+              vProject.textContent = 'private?'
+              return;
+            }
+            project = projectDict[projectId];
+          } catch (e) {
+            console.error(e);
+            vProject.className = 'error';
+            vProject.textContent = '' + e;
+            return;
+          }
+          const vLink = document.createElement('a');
+          vLink.href = `https://glitch.com/~${project.domain}`;
+          vLink.textContent = project.domain;
+          vLink.className = 'link';
+          vProject.appendChild(vLink);
+          vProject.appendChild(document.createElement('br'));
+          const vDescription = document.createElement('span');
+          vDescription.className = 'description';
+          vDescription.textContent = project.description;
+          vProject.appendChild(vDescription);
+        })();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  })();
+</script>
+<p>Raw data: <a href="/losetup">/sbin/losetup</a></p>
+<p>Source code: <a href="https://glitch.com/edit/#!/server-neighbors">view on Glitch</a></p>

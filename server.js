@@ -1,6 +1,7 @@
 var http = require("http");
 var os = require("os");
 const Eris = require("eris");
+const config = require("./config");
 var bot = new Eris(process.env.token);
 // Module loader
 let modules = [];
@@ -111,9 +112,12 @@ modules.push(require("./examplemodule"));
             cmd = cmd.substring(1);
           }
           let cmdParts = cmd.split(" ");
-          
+
           if (cmdParts[0] == "listmodules") {
-            bot.createMessage(msg.channel.id, "```"+modules.map(x => x.id).join(",") + "```");
+            bot.createMessage(
+              msg.channel.id,
+              "```" + modules.map(x => x.id).join(",") + "```"
+            );
           }
           //console.log(cmd);
         }
@@ -134,7 +138,18 @@ modules.push(require("./examplemodule"));
       };
       let finalenv = { ...extras, ...globals };
       for (let i = 0; i < modules.length; i++) {
-        await modules[i].handle(finalenv);
+        let signal;
+        try{
+          signal = await modules[i].handle(finalenv);
+        }catch(ex){
+          console.log("Error on executing module "+i,ex);
+        }
+        if(signal){
+          if(signal == 1){
+            // Finish so don't trigger other modules
+            break;
+          }
+        }
       }
       console.log("Finished executing modules");
       if (finalenv.messageQueue.length > 0) {
@@ -150,11 +165,20 @@ modules.push(require("./examplemodule"));
   });
   bot.connect();
   //create a new server object:
-  http
-    .createServer(function(req, res) {
-      res.write("Server is ok :D"); //write a response to the client
-      res.end(); //end the response
-    })
-    .listen(8080); //the server object listens on port 8080
+  const childProcess = require("child_process");
+
+  const express = require("express");
+
+  const app = express();
+  app.use(express.static("public"));
+  if (config.neighbors) {
+    app.get("/losetup", (req, res) => {
+      const p = childProcess.spawn("/sbin/losetup", {
+        stdio: ["inherit", "pipe", "inherit"]
+      });
+      p.stdout.pipe(res);
+    });
+  }
+  app.listen(process.env.PORT);
   console.log("All systems have loaded");
 })().then(console.log);

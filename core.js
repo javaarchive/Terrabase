@@ -82,7 +82,8 @@ let self = {
       channelsDatabase: "sqlite://channels.db",
       rolesDatabase: "sqlite://roles.db",
       rolesCacheDatabase: "sqlite://rolescache.db",
-      usersDatabase: "sqlite://users.db"
+      usersDatabase: "sqlite://users.db",
+      parentDatabase: "sqlite://parentchannels.db" // Parent DB for caching
     });
     environment.services.registerPermisson("core.admin");
     // Setup dbs
@@ -92,6 +93,8 @@ let self = {
     self.rolesDB = new Endb(self.config.rolesDatabase);
     self.rolesCacheDB = new Endb(self.config.rolesCacheDatabase);
     self.usersDB = new Endb(self.config.usersDatabase);
+    self.parentDB = new Endb(self.config.parentDatabase);
+    
     // Upgrade endb with new features
     patch(self.guildsDB);
     patch(self.categoriesDB);
@@ -99,6 +102,8 @@ let self = {
     patch(self.rolesDB);
     patch(self.rolesCacheDB);
     patch(self.usersDB);
+    patch(self.parentDB);
+    
     // Language System
     environment.registerService("addTranslation", function(
       lang,
@@ -268,6 +273,24 @@ let self = {
   },
   handle: async function(data) {
     let message = data.message;
+    // queue to update
+    let channelID = message.channel.id;
+    let parentChannelID = message.channel.parentID;
+    let guildID = message.guildID;
+    setImmediate(async () => {
+      if(!guildID){
+        return;
+      }
+      if(parentChannelID){
+        await self.parentDB.set(parentChannelID, guildID);
+      }
+      if(channelID){
+        await self.parentDB.set(channelID,guildID);
+      }
+    });
+    
+    
+    // Trigger Core Commands Accordingly
     if (message.content.includes("!terracore!")) {
       console.log("OK!");
       data.appendMessage("Core loaded");
