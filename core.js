@@ -376,6 +376,9 @@ let self = {
                   throw "You must be in the same guild as you are configuring to modify permissons";
                 }
               }
+              if(args[0] == "user"){
+                args[0] = args[0]+"-"+guildID; // make it guild specific
+              }
               
               // Fetch perms
               let permsMap = data.services.fetchDatabase(
