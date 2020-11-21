@@ -94,7 +94,7 @@ let self = {
     self.rolesCacheDB = new Endb(self.config.rolesCacheDatabase);
     self.usersDB = new Endb(self.config.usersDatabase);
     self.parentDB = new Endb(self.config.parentDatabase);
-    
+
     // Upgrade endb with new features
     patch(self.guildsDB);
     patch(self.categoriesDB);
@@ -103,7 +103,7 @@ let self = {
     patch(self.rolesCacheDB);
     patch(self.usersDB);
     patch(self.parentDB);
-    
+
     // Language System
     environment.registerService("addTranslation", function(
       lang,
@@ -261,14 +261,14 @@ let self = {
       );
     });
     // Add admins list if not yet
-    if(!(await config.has("adminIDs"))){
+    if (!(await config.has("adminIDs"))) {
       console.log("Creating admin IDS");
-      await config.set("adminIDs",[]);
+      await config.set("adminIDs", []);
     }
     environment.admins = await config.get("adminIDs");
-    environment.registerService("isAdmin", async function(userID){
+    environment.registerService("isAdmin", async function(userID) {
       return environment.admins.includes(userID);
-    })
+    });
     console.log("Core init finished");
   },
   handle: async function(data) {
@@ -278,18 +278,17 @@ let self = {
     let parentChannelID = message.channel.parentID;
     let guildID = message.guildID;
     setImmediate(async () => {
-      if(!guildID){
+      if (!guildID) {
         return;
       }
-      if(parentChannelID){
+      if (parentChannelID) {
         await self.parentDB.set(parentChannelID, guildID);
       }
-      if(channelID){
-        await self.parentDB.set(channelID,guildID);
+      if (channelID) {
+        await self.parentDB.set(channelID, guildID);
       }
     });
-    
-    
+
     // Trigger Core Commands Accordingly
     if (message.content.includes("!terracore!")) {
       console.log("OK!");
@@ -302,14 +301,17 @@ let self = {
       data.appendMessage(
         "`core.admin`: " + (await data.services.checkPerm(data, "core.admin"))
       );
-      console.log("Current admins "+data.admins);
+      console.log("Current admins " + data.admins);
     }
     if (message.content.startsWith("permslist")) {
       data.appendMessage("`Count: " + self.perms.size + "`");
       data.appendMessage("`" + JSON.stringify([...self.perms]) + "`");
     }
     if (message.content.startsWith("permsconfig")) {
-      if (message.member.permission.has("administrator") || (await data.services.checkPerm(data, "core.admin"))) {
+      if (
+        message.member.permission.has("administrator") ||
+        (await data.services.checkPerm(data, "core.admin"))
+      ) {
         data.appendMessage("Hello there. ");
         if (message.content.length == "permsconfig".length) {
           data.appendEmbed({
@@ -359,27 +361,34 @@ let self = {
             //getType(args[0]).set(args[1], args[3]);
             if (self.perms.has(args[2])) {
               // Check user has permisson to modify channel/guild/role/user
-              if(args[1].length < 8){
+              if (args[1].length < 8) {
                 throw "Suspcious Snowflake";
               }
               let sf = args[1];
-              if(args[0] == "guild"){
-                if(guildID != sf){
+              if (args[0] == "guild") {
+                if (guildID != sf) {
                   throw "You must be in the same guild as you are configuring to modify permissons";
                 }
               }
-              if(args[0] == "channel" || args[0] == "category"){
-                if(!(self.parentDB.has(args[1]))){
-                  throw "Unable to find which guild that channel/category is in. You will need to send at least one message in the channel or in a channel in the category if you are modifying a category. "; 
+              if (args[0] == "channel" || args[0] == "category") {
+                if (!self.parentDB.has(args[1])) {
+                  throw "Unable to find which guild that channel/category is in. You will need to send at least one message in the channel or in a channel in the category if you are modifying a category. ";
                 }
-                if(guildID != sf){
+                if (guildID != sf) {
                   throw "You must be in the same guild as you are configuring to modify permissons";
                 }
               }
-              if(args[0] == "user"){
-                args[0] = args[0]+"-"+guildID; // make it guild specific
+              if (args[0] == "user") {
+                args[0] = args[0] + "-" + guildID; // make it guild specific
               }
-              
+              if (args[0] == "role") {
+                let guild = data.client.guilds.get(guildID);
+                if (guild.roles.some(role => role.id == args[1])) {
+                } else {
+                  throw "No role with that id was found in your guild";
+                }
+              }
+
               // Fetch perms
               let permsMap = data.services.fetchDatabase(
                 args[1],
@@ -419,6 +428,26 @@ let self = {
           "Not an admin you have perms number " +
             message.member.permission.allow
         );
+      }
+    } else if (message.content === "compileroles") {
+      if (
+        message.member.permission.has("administrator") ||
+        (await data.services.checkPerm(data, "core.admin"))
+      ) {
+        let guild = await data.client.guilds.fetch(guild.id);
+        let roles = guild.roles;
+        for (let i = 0; i < roles.length; i++) {
+          console.log("Role selected", roles[i]);
+          let permsMap = data.services.fetchDatabase(
+            roles[i],
+            "roles",
+            "perms",
+            {}
+          );
+        }
+        data.appendMessage("Roles have been compiled and saved to cache");
+      } else {
+        data.appendMessage("Sorry, you're not an admin. ");
       }
     }
   }
