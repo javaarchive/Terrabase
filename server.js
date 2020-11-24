@@ -71,6 +71,7 @@ modules.push(require("./examplemodule"));
   });
 
   bot.on("messageCreate", async msg => {
+    await botEventService.emit("premessage",msg);
     if (msg.content === "!speed") {
       let curTime = Date.now();
       await bot.createMessage(msg.channel.id, "Testing my speed");
@@ -137,6 +138,7 @@ modules.push(require("./examplemodule"));
         message: msg
       };
       let finalenv = { ...extras, ...globals };
+      await botEventService.emit("preexecute", finalenv);
       for (let i = 0; i < modules.length; i++) {
         let signal;
         try{

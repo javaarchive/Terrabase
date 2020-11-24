@@ -429,21 +429,36 @@ let self = {
             message.member.permission.allow
         );
       }
-    } else if (message.content === "compileroles") {
+    } 
+    console.log("msg",message.content);
+    if (message.content == "compileroles") {
+      console.log('Compile Roles');
       if (
         message.member.permission.has("administrator") ||
         (await data.services.checkPerm(data, "core.admin"))
       ) {
-        let guild = await data.client.guilds.fetch(guild.id);
+        let guild = await data.client.guilds.get(data.message.guildID);
         let roles = guild.roles;
-        for (let i = 0; i < roles.length; i++) {
-          console.log("Role selected", roles[i]);
+        //console.log(guild.roles);
+        //console.log(guild.roles.filter(x => true));
+        let roleIds = Object.keys(roles);
+        let currentRolePerms = {};
+        for (let i = 0; i < roleIds.length; i++) {
+          console.log("Role selected", roleIds[i]);
           let permsMap = data.services.fetchDatabase(
-            roles[i],
+            roleIds[i],
             "roles",
             "perms",
             {}
           );
+          currentRolePerms = _.defaults(currentRolePerms, await permsMap.get());
+          let permsCache = data.services.fetchDatabase(
+            roleIds[i],
+            "rolesCache",
+            "perms",
+            {}
+          );
+          await permsCache.set(currentRolePerms);
         }
         data.appendMessage("Roles have been compiled and saved to cache");
       } else {
