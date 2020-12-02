@@ -63,7 +63,7 @@ modules.push(require("./examplemodule"));
         await botEventService.emit("moduleafterload", modules[i]);
       } catch (ex) {
         console.warn(
-          "Internal Error whie loading the " + i + "th module " + ex
+          "Internal Error whie starting the " + i + "th module " + ex
         );
         modules.splice(i, 1);
       }

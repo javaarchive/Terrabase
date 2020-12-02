@@ -63,7 +63,7 @@ let self = {
     );
     // Aliases
     environment.srvs = environment.services;
-    environment._t = environment.services.getTranslation;
+    environment.tl = environment.services.getTranslation;
   },
   handle: async function(data) {
     let message = data.message;
@@ -73,17 +73,18 @@ let self = {
 
     const prefix = await data.services.getPrefix(data);
     if (
-      data.services.isAdmin(message.author) &&
+      data.services.isAdmin(message.author.id) &&
       message.content.startsWith(prefix)
     ) {
       const cmdData = message.content.substring(prefix.length).split(" ");
+      console.log(cmdData);
       data.appendMessage(JSON.stringify(cmdData));
       if (cmdData[0] == "eval-repl") {
         await data.message.channel.createMessage(
           await data.services.getTranslation("en", self.id, "replon")
         );
         let runInput = data.services.getNextMessageFromUser;
-
+        
         while (true) {
           let inp = await runInput(data);
           //console.log("Evalling Input", inp);
