@@ -161,7 +161,7 @@ let self = {
           let template = {};
           template[id] = defaults;
           await getType(level).ensure(levelSnowflake, template);
-          console.log(
+          /*console.log(
             level +
               " " +
               levelSnowflake +
@@ -169,7 +169,7 @@ let self = {
               JSON.stringify(await getType(level).get(levelSnowflake)) +
               " requested " +
               id
-          );
+          );*/
           let data = await getType(level).get(levelSnowflake);
           if (!data[id]) {
             data[id] = template;
@@ -197,12 +197,12 @@ let self = {
       // Fetch from all three levels
       let data = defaults;
       //data[id] = defaults;
-      console.log("Using id " + id);
+      //console.log("Using id " + id);
       for (let i = 0; i < levels.length; i++) {
         if (levels[i] == 1) {
           continue;
         }
-        console.log(
+        /*console.log(
           "stage " +
             order[i] +
             " id: " +
@@ -213,7 +213,7 @@ let self = {
                 .fetchDatabase(levels[i], order[i], id, {})
                 .get()
             )
-        );
+        );*/
         let overrides = await environment.services
           .fetchDatabase(levels[i], order[i], id, {})
           .get();
@@ -230,12 +230,12 @@ let self = {
       //console.log("Checking " + JSON.stringify(data));
       let fetchLevels = getFetchLevels(data.message);
       let result = false;
-      console.log(
+      /*console.log(
         "Fetch Complete Data: " +
           JSON.stringify(
             await environment.services.fetchComplete(fetchLevels, "perms")
           )
-      );
+      );*/
       if (self.perms.has(perm)) {
         result =
           false ||
@@ -250,6 +250,7 @@ let self = {
       }
       return result;
     });
+
     environment.registerService("getFetchLevelsFromMessage", getFetchLevels);
     // Non-essentials
     environment.registerService("fetchGlobals", async function(data) {
@@ -266,7 +267,7 @@ let self = {
       await config.set("adminIDs", []);
     }
     environment.admins = await config.get("adminIDs");
-    environment.registerService("isAdmin", async function(userID) {
+    environment.registerService("isAdmin", function(userID) {
       return environment.admins.includes(userID);
     });
     console.log("Core init finished");
@@ -429,10 +430,10 @@ let self = {
             message.member.permission.allow
         );
       }
-    } 
-    console.log("msg",message.content);
+    }
+    console.log("msg", message.content);
     if (message.content == "compileroles") {
-      console.log('Compile Roles');
+      console.log("Compile Roles");
       if (
         message.member.permission.has("administrator") ||
         (await data.services.checkPerm(data, "core.admin"))

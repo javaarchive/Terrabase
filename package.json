@@ -33,7 +33,7 @@
   "repository": {
     "url": "https://github.com/javaarchive/Terrabase"
   },
-  "license": "MIT",
+  "license": "GPL-3.0",
   "keywords": [
     "node",
     "glitch",

@@ -55,7 +55,7 @@ modules.push(require("./examplemodule"));
   };
   bot.on("ready", async () => {
     console.log("System Up");
-    botEventService.emit("started");
+    await botEventService.emit("started");
     for (let i = 0; i < modules.length; i++) {
       try {
         await botEventService.emit("modulebeforeload", modules[i]);
